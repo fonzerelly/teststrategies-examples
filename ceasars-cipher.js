@@ -5,6 +5,9 @@ class CeasarsCipher {
         let key = _alphabet.slice(shift).concat(_alphabet.slice(0, shift))
         let result = "";
         return text.split('').map((ch) => {
+            if (ch === ' ') {
+                return ' ';
+            }
             return key[_alphabet.indexOf(ch)]
         }).join('')
     }
