@@ -13,5 +13,16 @@ fdescribe('ceasars-cipher', () => {
                 expect(CeasarsCipher.encode(setup.shift, setup.text)).toBe(setup.output)
             })
         })
+
+        it('should throw on unsupported characters', () => {
+            expect(() => { CeasarsCipher.encode('abc is unsupported')}).toThrow();
+        })
+    })
+
+    describe('decode', () => {
+        it('should decode ciphered text to clear text', () => {
+            expect(CeasarsCipher.decode(1, 'IFMMP XPSME')).toBe('HELLO WORLD')
+            console.log(CeasarsCipher.decode(1, 'IFMMP XPSME'))
+        })
     })
 })

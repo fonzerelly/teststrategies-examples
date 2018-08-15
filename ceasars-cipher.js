@@ -11,5 +11,9 @@ class CeasarsCipher {
             return key[_alphabet.indexOf(ch)]
         }).join('')
     }
+
+    static decode(shift, text) {
+        return CeasarsCipher.encode(_alphabet.length - shift ,text)
+    }
 }
 module.exports = CeasarsCipher
