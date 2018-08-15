@@ -3,12 +3,15 @@ const _alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', '
 class CeasarsCipher {
     static encode(shift, text) {
         let key = _alphabet.slice(shift).concat(_alphabet.slice(0, shift))
-        let result = "";
         return text.split('').map((ch) => {
+            const alphaIndex = _alphabet.indexOf(ch)
+
             if (ch === ' ') {
                 return ' ';
+            } else if (alphaIndex === -1) {
+                throw new Error(`Invalid character passed: '${ch}'`)
             }
-            return key[_alphabet.indexOf(ch)]
+            return key[alphaIndex]
         }).join('')
     }
 
