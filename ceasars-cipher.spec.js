@@ -2,6 +2,20 @@ const CeasarsCipher = require('./ceasars-cipher.js');
 const jsc = require('jsverify')
 
 fdescribe('ceasars-cipher', () => {
+    describe('createMessage', () => {
+        it('should return structure of a message', () => {
+            expect(CeasarsCipher.createMessage('ABC').text).toBe('ABC')
+        });
+
+        it('should throw on invalid characters', () => {
+            expect(() => { CeasarsCipher.createMessage('abc') }).toThrow()
+        })
+
+        it('should accept space', () => {
+            expect(() => { CeasarsCipher.createMessage(' ') }).not.toThrow()
+        })
+    })
+
     describe('encode', () => {
         [
             {shift: 1, text: 'ABC', output: 'BCD'},
@@ -12,12 +26,12 @@ fdescribe('ceasars-cipher', () => {
 
         ].forEach((setup) => {
             it(`should encode '${setup.text}' to '${setup.output}'`, () => {
-                expect(CeasarsCipher.encode(setup.shift, setup.text)).toBe(setup.output)
+                expect(CeasarsCipher.encode(setup.shift, CeasarsCipher.createMessage(setup.text)).text).toBe(setup.output)
             })
         })
 
-        it('should throw on unsupported characters', () => {
-            expect(() => { CeasarsCipher.encode(1, 'abc is unsupported')}).toThrow();
+        it('should throw on non Message objects', () => {
+            expect(() => { CeasarsCipher.encode(1, { text :'abc is unsupported' })}).toThrow();
         })
 
         xit('should throw on invalid blank character', () => {
@@ -27,13 +41,15 @@ fdescribe('ceasars-cipher', () => {
 
     describe('decode', () => {
         it('should decode ciphered text to clear text', () => {
-            expect(CeasarsCipher.decode(1, 'IFMMP XPSME')).toBe('HELLO WORLD')
+            expect(CeasarsCipher.decode(1, CeasarsCipher.createMessage('IFMMP XPSME')).text).toBe('HELLO WORLD')
         })
 
         xit('should decode empty string', () => {
             expect(CeasarsCipher.decode(0, '\u0000')).toBe('')
         })
     })
+
+
 
     /*
     * The Property based Test showed, that there is a fundamental issue with encode/decode.

@@ -1,18 +1,46 @@
-const _alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+function createIndexForUnchangedChars (alphabet) {
+    alphabet[-2] = ' '
+    return alphabet
+}
+
+const _alphabet = createIndexForUnchangedChars(['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'])
+
+class Message {
+    constructor(text) {
+        this.text = text
+    }
+}
+
+function toAlphabetIndex (text) {
+    return text.split('')
+        .map((ch) => (ch === ' ') ? -2 : _alphabet.indexOf(ch) )
+}
 
 class CeasarsCipher {
-    static encode(shift, text) {
-        let key = _alphabet.slice(shift).concat(_alphabet.slice(0, shift))
-        return text.split('').map((ch) => {
-            const alphaIndex = _alphabet.indexOf(ch)
+    static createMessage(text) {
+        const containsInvalidChars = toAlphabetIndex(text)
+            .filter(index => index === -1).length > 0
+        if (containsInvalidChars) {
+            throw new Error(`Contains invallid characters: ${text}`)
+        }
+        return new Message(text)
+    }
 
-            if (ch === ' ') {
-                return ' ';
-            } else if (alphaIndex === -1) {
-                throw new Error(`Invalid character passed: '${ch}'`)
-            }
-            return key[alphaIndex]
-        }).join('')
+    static encode(shift, message) {
+        if (!(message instanceof Message)) {
+            throw new TypeError(`"${message}" is no valid Message!`)
+        }
+        let key = createIndexForUnchangedChars(
+            _alphabet
+                .slice(shift)
+                .concat(_alphabet.slice(0, shift))
+        )
+
+        return CeasarsCipher.createMessage(
+            toAlphabetIndex(message.text).map((index) => {
+                return key[index]
+            }).join('')
+        )
     }
 
     static decode(shift, text) {
