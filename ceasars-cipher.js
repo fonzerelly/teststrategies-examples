@@ -27,6 +27,9 @@ class CeasarsCipher {
     }
 
     static encode(shift, message) {
+        if (shift < 0 || shift > 26) {
+            throw new Error (`Only shifts between 0 and 26 are allowed: ${shift}`)
+        }
         if (!(message instanceof Message)) {
             throw new TypeError(`"${message}" is no valid Message!`)
         }

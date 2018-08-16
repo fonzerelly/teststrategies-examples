@@ -34,8 +34,22 @@ fdescribe('ceasars-cipher', () => {
             expect(() => { CeasarsCipher.encode(1, { text :'abc is unsupported' })}).toThrow();
         })
 
-        xit('should throw on invalid blank character', () => {
-            expect(() => { CeasarsCipher.encode(0, '\u0000')}).toThrow()
+        it('should throw on negative shifts', () => {
+            expect(() => {
+                CeasarsCipher.encode(
+                    -1,
+                    CeasarsCipher.createMessage('ABC')
+                )
+            }).toThrow();
+        })
+
+        it('should throw on shifts greater than 26', () => {
+            expect(() => {
+                CeasarsCipher.encode(
+                    27,
+                    CeasarsCipher.createMessage('ABC')
+                )
+            }).toThrow();
         })
     })
 
@@ -43,25 +57,27 @@ fdescribe('ceasars-cipher', () => {
         it('should decode ciphered text to clear text', () => {
             expect(CeasarsCipher.decode(1, CeasarsCipher.createMessage('IFMMP XPSME')).text).toBe('HELLO WORLD')
         })
-
-        xit('should decode empty string', () => {
-            expect(CeasarsCipher.decode(0, '\u0000')).toBe('')
-        })
     })
 
-
-
-    /*
-    * The Property based Test showed, that there is a fundamental issue with encode/decode.
-    * They value range is heavily restricted to A-Z and it would simply fail for any other character
-    * So if we could assure, that encode only works on ValueObjects, that fullfill the restriction,
-    * we could accept a property based test, that only tests for this small value space.
-    */
     describe('invariant', () => {
-        xit('should hold true for every input combination', () => {
-            const propertyHolds = jsc.checkForall(jsc.integer, jsc.string, (shift, text) => {
-              return text === CeasarsCipher.decode(shift, CeasarsCipher.encode(shift, text))
-            })
+        it('should hold true for every input combination', () => {
+            const propertyHolds = jsc.checkForall(
+                jsc.nat(26),
+                jsc.suchthat(
+                    jsc.string,
+                    (str) => {
+                        // assures that only capital letters get used
+                        return str.match(/^[A-Z]*$/) !== null
+                    }
+                ),
+                (shift, text) => {
+                    const msg = CeasarsCipher.createMessage(text)
+                    const encoded = CeasarsCipher.encode(shift, msg)
+                    const decoded = CeasarsCipher.decode(shift, encoded)
+
+                    return text === decoded.text
+                }
+            )
             expect(propertyHolds).toBe(true)
         })
     })
