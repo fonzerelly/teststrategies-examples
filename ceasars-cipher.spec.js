@@ -63,14 +63,9 @@ fdescribe('ceasars-cipher', () => {
         it('should hold true for every input combination', () => {
             const propertyHolds = jsc.checkForall(
                 jsc.nat(26),
-                jsc.suchthat(
-                    jsc.string,
-                    (str) => {
-                        // assures that only capital letters get used
-                        return str.match(/^[A-Z]*$/) !== null
-                    }
-                ),
+                jsc.asciistring,
                 (shift, text) => {
+                    text = text.toUpperCase().replace(/[^A-Z]/g, '')
                     const msg = CeasarsCipher.createMessage(text)
                     const encoded = CeasarsCipher.encode(shift, msg)
                     const decoded = CeasarsCipher.decode(shift, encoded)
